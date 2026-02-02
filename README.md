@@ -95,5 +95,5 @@ npm run start
 ### Test de endpoints - Swagger
 
 ```url
-http://localhost:3000/docs
+https://stockpay-backend-production.up.railway.app/docs
 ```
