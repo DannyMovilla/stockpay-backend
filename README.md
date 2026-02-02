@@ -92,4 +92,8 @@ npm run build
 npm run start
 ```
 
+### Test de endpoints - Swagger
 
+```url
+http://localhost:3000/docs
+```
