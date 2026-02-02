@@ -1,73 +1,95 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Payments API – Backend (NestJS + Wompi)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📌 Descripción general
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este proyecto corresponde al **backend de una API de servicios de pago**, desarrollada en **NestJS (TypeScript)** e integrada con **Wompi** como pasarela de pago.
 
-## Description
+La aplicación fue diseñada siguiendo principios de **Arquitectura Hexagonal (Puertos y Adaptadores)** y **Programación Orientada a Ferrocarriles (ROP)**, garantizando separación de responsabilidades, manejo explícito de errores y consistencia del estado interno frente a fallos externos.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Installation
+## 🛠️ Tecnologías utilizadas
 
-```bash
-$ npm install
+- **Node.js**
+- **NestJS**
+- **TypeScript**
+- **Axios**
+- **Prisma ORM**
+- **PostgreSQL**
+- **Wompi API**
+- **Helmet (seguridad HTTP)**
+- **CORS controlado**
+
+---
+
+## 🧱 Arquitectura
+
+La aplicación sigue una **Arquitectura Hexagonal**, donde:
+
+- La lógica de negocio **NO vive en los controladores**
+- Los casos de uso están desacoplados de frameworks y proveedores externos
+- Wompi y la base de datos son tratados como adaptadores externos
+
+### Estructura del proyecto
+
+
+### Diseño de Base de Datos
+
+<img width="1615" height="799" alt="Image" src="https://github.com/user-attachments/assets/8a47783b-373b-4bd1-aca1-60785b60ed1c" />
+
+
+### Principios aplicados
+
+- Arquitectura Hexagonal (Puertos y Adaptadores)
+- Separación de capas (Domain / Application / Infrastructure)
+- Código desacoplado y mantenible
+
+---
+
+## 🚦 Programación Orientada a Ferrocarriles (ROP)
+
+El flujo de ejecución se maneja mediante el tipo `Result<T>`, evitando el uso de excepciones (`throw`) dentro de los casos de uso.
+
+```ts
+export type Result<T> =
+  | { ok: true; value: T }
+  | { ok: false; error: Error };
 ```
 
-## Running the app
+### Variables de entorno
 
-```bash
-# development
-$ npm run start
+```env
+PORT=3000
+NODE_ENV=production
 
-# watch mode
-$ npm run start:dev
+DATABASE_URL=
+WOMPI_PUBLIC_KEY=
+WOMPI_PRIVATE_KEY=
+WOMPI_EVENT_SECRET=
+WOMPI_INTEGRITY_SECRET=
+WOMPI_API_URL=
+UAT_URL=
+FRONTEND_URL=
 
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+### Instalación
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Support
+### Desarrollo
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run dev
+```
 
-## Stay in touch
+### Producción
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run build
+npm run start
+```
 
-## License
 
-Nest is [MIT licensed](LICENSE).

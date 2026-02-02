@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { PaymentDataDto } from 'src/application/dto/payment-data.dto';
+import { mapWompiError } from 'src/application/mappers/wompi-error.mapper';
+import { err, ok, Result } from 'src/shared/result';
 
 @Injectable()
 export class WompiAdapter {
@@ -17,40 +20,39 @@ export class WompiAdapter {
     },
   });
 
-  async createPayment(data) {
+  async createPayment(data): Promise<any> {
     try {
       const response = await this.privateApi.post('/transactions', data);
-      return response.data.data;
+      return ok(response.data.data);
     } catch (error) {
-      throw error;
+      return err(mapWompiError(error));
     }
   }
 
   async getTransactionStatus(
     reference: string,
-  ): Promise<'APPROVED' | 'PENDING' | 'FAILED' | null> {
+  ): Promise<Result<'APPROVED' | 'PENDING' | 'FAILED'>> {
     try {
       const response = await this.privateApi.get(
         `/transactions?reference=${reference}`,
       );
 
-      const transaction = response.data?.data?.[0]; // la API devuelve un array
+      const transaction = response.data?.data?.[0];
       if (!transaction) return null;
 
-      // Mapear estados de Wompi a tus estados internos
       switch (transaction.status) {
         case 'APPROVED':
-          return 'APPROVED';
+          return ok('APPROVED');
         case 'DECLINED':
         case 'VOIDED':
         case 'FAILED':
-          return 'FAILED';
+          return ok('FAILED');
         case 'PENDING':
         default:
-          return 'PENDING';
+          return ok('PENDING');
       }
     } catch (error: any) {
-      return null;
+      return err(mapWompiError(error));
     }
   }
 
@@ -62,7 +64,7 @@ export class WompiAdapter {
     return response.data.data.presigned_acceptance.acceptance_token;
   }
 
-  async createCardToken(card) {
+  async createCardToken(card: PaymentDataDto) {
     try {
       const response = await this.publicApi.post('/tokens/cards', {
         number: card.cardNumber,
@@ -72,9 +74,9 @@ export class WompiAdapter {
         card_holder: card.cardHolder,
       });
 
-      return response.data.data.id;
+      return ok(response.data.data.id);
     } catch (error) {
-      throw error;
+      return err(mapWompiError(error));
     }
   }
 }

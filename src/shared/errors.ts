@@ -4,6 +4,18 @@ export class ProductNotFoundError extends Error {
   }
 }
 
+export class CustomerNotFoundError extends Error {
+  constructor() {
+    super('Customer not found');
+  }
+}
+
+export class DeliveryNotFoundError extends Error {
+  constructor() {
+    super('Delivery not found');
+  }
+}
+
 export class PaymentFailedError extends Error {
   constructor(message = 'Payment failed') {
     super(message);

@@ -1,10 +1,9 @@
-import { ProcessPaymentUseCase } from '../../src/application/use-cases/process-payment.usecase';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { ProcessPaymentUseCase } from './process-payment.usecase';
 
 describe('ProcessPaymentUseCase', () => {
   let useCase: ProcessPaymentUseCase;
   let transactionRepo: any;
-  let customerRepo: any;
-  let productRepo: any;
   let wompi: any;
 
   beforeEach(() => {
@@ -13,63 +12,51 @@ describe('ProcessPaymentUseCase', () => {
       updateStatus: jest.fn(),
       decreaseStock: jest.fn(),
     };
-
-    customerRepo = {
-      findById: jest.fn(),
-    };
-
-    productRepo = {
-      findById: jest.fn(),
-    };
-
     wompi = {
       createCardToken: jest.fn(),
       createPayment: jest.fn(),
       getTransactionStatus: jest.fn(),
     };
-
     useCase = new ProcessPaymentUseCase(
       transactionRepo,
       wompi,
-      customerRepo,
-      productRepo,
+      {} as any,
+      {} as any,
     );
   });
 
-  it('should process payment successfully', async () => {
+  it('should execute payment flow and update status', async () => {
     const transaction = {
-      id: 'tx_123',
+      id: 'tx1',
       totalAmount: 1500,
-      productId: 'prod_123',
+      productId: 'prod1',
       quantity: 2,
     };
-
     transactionRepo.findById.mockResolvedValue(transaction);
-    wompi.createCardToken.mockResolvedValue('tok_123');
-    wompi.createPayment.mockResolvedValue({ id: 'pay_123', status: 'PENDING' });
+    wompi.createCardToken.mockResolvedValue('tok_test_123');
+    wompi.createPayment.mockResolvedValue({ id: 'wompi_tx_1' });
     wompi.getTransactionStatus.mockResolvedValue({
       status: 'APPROVED',
-      transaction_id: 'pay_123',
+      transaction_id: 'wompi_tx_1',
     });
 
-    const result = await useCase.execute({
-      transactionId: 'tx_123',
+    await useCase.execute({
+      transactionId: 'tx1',
       paymentData: {
         cardNumber: '4242424242424242',
+        cvc: '123',
         expMonth: '12',
         expYear: '29',
-        cvc: '123',
-        cardHolder: 'Test User',
+        cardHolder: 'Juan',
       },
     });
 
+    expect(transactionRepo.decreaseStock).toHaveBeenCalledWith('prod1', 2);
     expect(transactionRepo.updateStatus).toHaveBeenCalledWith(
-      'tx_123',
+      'tx1',
       'APPROVED',
-      'pay_123',
+      'wompi_tx_1',
     );
-    expect(transactionRepo.decreaseStock).toHaveBeenCalledWith('prod_123', 2);
-    expect(result.id).toBe('pay_123');
   });
 
   it('should throw error if transaction not found', async () => {
@@ -77,13 +64,13 @@ describe('ProcessPaymentUseCase', () => {
 
     await expect(
       useCase.execute({
-        transactionId: 'tx_missing',
+        transactionId: 'tx1',
         paymentData: {
           cardNumber: '4242424242424242',
+          cvc: '123',
           expMonth: '12',
           expYear: '29',
-          cvc: '123',
-          cardHolder: 'Test User',
+          cardHolder: 'Juan',
         },
       }),
     ).rejects.toThrow('Transaction not found');

@@ -10,6 +10,7 @@ import {
   PRODUCT_REPOSITORY,
   TRANSACTION_REPOSITORY,
 } from 'src/domain/tokens';
+import { CreateTransactionDto } from '../dto/create-transaction.dto';
 
 @Injectable()
 export class CreateTransactionUseCase {
@@ -27,7 +28,7 @@ export class CreateTransactionUseCase {
     private readonly deliveryRepo: DeliveryRepository,
   ) {}
 
-  async execute(input) {
+  async execute(input: CreateTransactionDto) {
     const product = await this.productRepo.findById(input.productId);
     if (!product || product.stock <= 0) {
       throw new ProductNotFoundError();

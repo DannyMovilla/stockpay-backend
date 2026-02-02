@@ -79,13 +79,20 @@ import { GetTransactionUseCase } from './application/use-cases/get-transaction.u
     },
     {
       provide: ProcessPaymentUseCase,
-      useFactory: (txRepo, productRepo, customerRepo, wompi) =>
-        new ProcessPaymentUseCase(txRepo, productRepo, wompi, customerRepo),
+      useFactory: (txRepo, productRepo, customerRepo, wompi, deliveryRepo) =>
+        new ProcessPaymentUseCase(
+          txRepo,
+          productRepo,
+          wompi,
+          customerRepo,
+          deliveryRepo,
+        ),
       inject: [
         'TransactionRepository',
         'ProductRepository',
         'CustomerRepository',
         WompiAdapter,
+        'DeliveryRepository',
       ],
     },
     {
